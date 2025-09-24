@@ -11,20 +11,33 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:modul1/main.dart';
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
+  testWidgets('StatefulHomePage displays and updates random data', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+    // Pastikan Anda menjalankan versi Stateful di main.dart
+    await tester.pumpWidget(const MyAppStateful());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verifikasi bahwa ada dua widget Text di halaman
+    // Salah satunya untuk "String Acak:" dan yang lainnya "Angka Acak:"
+    final textFinder = find.byType(Text);
+    expect(textFinder, findsNWidgets(2));
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Temukan tombol untuk menghasilkan data baru
+    final generateButton = find.byType(ElevatedButton);
+    expect(generateButton, findsNWidgets(2)); // Ada dua tombol di halaman stateful
+
+    // Simpan teks awal
+    final initialString = tester.widget<Text>(textFinder.at(0)).data;
+    final initialNumber = tester.widget<Text>(textFinder.at(1)).data;
+    
+    // Tekan tombol "Hasilkan Data Baru"
+    await tester.tap(find.text('Hasilkan Data Baru'));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // Verifikasi bahwa teks telah berubah
+    final updatedString = tester.widget<Text>(textFinder.at(0)).data;
+    final updatedNumber = tester.widget<Text>(textFinder.at(1)).data;
+
+    expect(initialString, isNot(equals(updatedString)));
+    expect(initialNumber, isNot(equals(updatedNumber)));
   });
 }

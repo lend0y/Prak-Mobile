@@ -1,122 +1,209 @@
+import 'dart:math';
 import 'package:flutter/material.dart';
 
-void main() {
-  runApp(const MyApp());
+// fungsi untuk menghasilkan string acak
+String generateRandomString() {
+  const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+  Random random = Random();
+  return List.generate(
+    10,
+    (index) => characters[random.nextInt(characters.length)],
+  ).join();
 }
 
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+// fungsi untuk menghasilkan angka acak dari 0 hingga 99
+int generateRandomNumber() {
+  Random random = Random();
+  return random.nextInt(100);
+}
 
-  // This widget is the root of your application.
-  @override
+void main() {
+  // ubah baris di bawah ini untuk menjalankan versi Stateless atau Stateful
+  runApp(const MyAppStateless());
+  // runApp(const MyAppStateful());
+}
+
+// =========================================================
+// IMPLEMENTASI DENGAN STATELESS WIDGET
+// =========================================================
+
+class MyAppStateless extends StatelessWidget {
+  const MyAppStateless({super.key});
+
+  @override 
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // TRY THIS: Try running your application with "flutter run". You'll see
-        // the application has a purple toolbar. Then, without quitting the app,
-        // try changing the seedColor in the colorScheme below to Colors.green
-        // and then invoke "hot reload" (save your changes or press the "hot
-        // reload" button in a Flutter-supported IDE, or press "r" if you used
-        // the command line to start the app).
-        //
-        // Notice that the counter didn't reset back to zero; the application
-        // state is not lost during the reload. To reset the state, use hot
-        // restart instead.
-        //
-        // This works for code too, not just values: Most code changes can be
-        // tested with just a hot reload.
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-      ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+    return const MaterialApp(
+      title: 'Stateless Codelab App',
+      home: StatelessHomePage(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
-
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
+class StatelessHomePage extends StatelessWidget {
+  const StatelessHomePage({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  Widget build(BuildContext context) {
+    // data acak dibuat HANYA SEKALI saat widget ini dibangun
+    final String randomString = generateRandomString();
+    final int randomNumber = generateRandomNumber();
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Stateless - Halaman Utama'),
+        backgroundColor: Colors.blue,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text(
+              'Data di halaman ini tidak akan berubah.',
+              style: TextStyle(fontSize: 16),
+            ),
+            const SizedBox(height: 20),
+            Text('String Acak: $randomString', style: const TextStyle(fontSize: 18)),
+            Text('Angka Acak: $randomNumber', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      randomString: randomString,
+                      randomNumber: randomNumber,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Ke Halaman Detail'),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+// =========================================================
+// IMPLEMENTASI DENGAN STATEFUL WIDGET
+// =========================================================
 
-  void _incrementCounter() {
+class MyAppStateful extends StatelessWidget {
+  const MyAppStateful({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      title: 'Stateful Codelab App',
+      home: StatefulHomePage(),
+    );
+  }
+}
+
+class StatefulHomePage extends StatefulWidget {
+  const StatefulHomePage({super.key});
+
+  @override
+  State<StatefulHomePage> createState() => _StatefulHomePageState();
+}
+
+class _StatefulHomePageState extends State<StatefulHomePage> {
+  String _randomString = '';
+  int _randomNumber = 0;
+
+  @override
+  void initState() {
+    super.initState();
+    _generateNewData();
+  }
+
+  // fungsi untuk menghasilkan data acak baru dan memperbarui state
+  void _generateNewData() {
     setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
+      _randomString = generateRandomString();
+      _randomNumber = generateRandomNumber();
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
     return Scaffold(
       appBar: AppBar(
-        // TRY THIS: Try changing the color here to a specific color (to
-        // Colors.amber, perhaps?) and trigger a hot reload to see the AppBar
-        // change color while the other colors stay the same.
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
+        title: const Text('Stateful - Halaman Utama'),
+        backgroundColor: Colors.red,
       ),
       body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          //
-          // TRY THIS: Invoke "debug painting" (choose the "Toggle Debug Paint"
-          // action in the IDE, or press "p" in the console), to see the
-          // wireframe for each widget.
           mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text('You have pushed the button this many times:'),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+          children: [
+            Text('String Acak: $_randomString', style: const TextStyle(fontSize: 18)),
+            Text('Angka Acak: $_randomNumber', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _generateNewData,
+              child: const Text('Hasilkan Data Baru'),
+            ),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => DetailPage(
+                      randomString: _randomString,
+                      randomNumber: _randomNumber,
+                    ),
+                  ),
+                );
+              },
+              child: const Text('Ke Halaman Detail'),
             ),
           ],
         ),
       ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
+    );
+  }
+}
+
+// =========================================================
+// HALAMAN DETAIL (digunakan oleh kedua versi)
+// =========================================================
+
+class DetailPage extends StatelessWidget {
+  final String randomString;
+  final int randomNumber;
+
+  const DetailPage({
+    super.key,
+    required this.randomString,
+    required this.randomNumber,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text('Halaman Detail'),
+        backgroundColor: Colors.purple,
+      ),
+      body: Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            const Text('Data yang Diterima:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
+            const SizedBox(height: 20),
+            Text('String: $randomString', style: const TextStyle(fontSize: 18)),
+            Text('Angka: $randomNumber', style: const TextStyle(fontSize: 18)),
+            const SizedBox(height: 30),
+            ElevatedButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('Kembali'),
+            ),
+          ],
+        ),
+      ),
     );
   }
 }
