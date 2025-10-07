@@ -1,3 +1,4 @@
 {
-    "avdmanager.emulator": "c:\\Users\\Lenhy\\modul1\\lib\\main.dart"
+  "avdmanager.emulator": "c:\\android\\sdk\\emulator\\emulator.exe",
+  "cmake.sourceDirectory": "C:/Users/Lenhy/modul1/linux"
 }
